@@ -56,9 +56,13 @@
   (with-html
     (:h1 "Tasks")
     (:div
+     :style "display: grid; grid-template-columns: max-content min-content"
      (loop for task in (tasks widget) do
        (progn
-	 (render task))))
+	 (render task)
+	 (render-link (lambda (&key &allow-other-keys)
+    			     (remove-task task widget))
+    			   "Delete"))))
     (with-html-form (:post (lambda (&key title &allow-other-keys)
 			     (add-task widget title)))
       (:input :type "text"
@@ -81,6 +85,11 @@
 (defmethod add-task ((task-list task-list) title)
   (push (make-task title)
 	(tasks task-list))
+  (update task-list))
+
+(defmethod remove-task ((task task) (task-list task-list))
+  (setf (tasks task-list)
+	(remove task (tasks task-list)))
   (update task-list))
 
 (defmethod toggle ((task task))
